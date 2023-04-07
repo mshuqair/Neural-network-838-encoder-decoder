@@ -8,6 +8,5 @@ This code is to manulay construct a three layered neural network. The input laye
 
 
 
-![](Figure_2.png)
-**Figure 2.** The neural network architecture.
+![](Figure_2.png) **Figure 2.** The neural network architecture.
 
