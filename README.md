@@ -3,3 +3,5 @@ Modeling 8-bit binary input using 8-3-8 shaped neural network
 
 
 ## Decription 
+
+![alt text](Figure_1.png)
