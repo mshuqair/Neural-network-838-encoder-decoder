@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 
 def sigma(x):
@@ -15,6 +16,7 @@ O = np.zeros(8)  # network output vector
 SSE = np.zeros((8, N))  # sum of squared errors
 W_plot = np.zeros(N)
 
+sns.set_theme(style='darkgrid')
 figure_1 = plt.figure().add_subplot(111)
 figure_2 = plt.figure().add_subplot(111)
 
@@ -58,8 +60,8 @@ for i in range(8):
         delta_h = O2 * (1 - O2) * np.dot(W_B, delta)
 
         # updating the weights
-        W_A += alpha * np.dot(np.reshape(X, (8, 1)), np.reshape(delta_h, (1, 3)))
-        W_B += alpha * np.dot(np.reshape(O2, (3, 1)), np.reshape(delta, (1, 8)))
+        W_A += alpha * np.dot(np.reshape(X, newshape=(8, 1)), np.reshape(delta_h, newshape=(1, 3)))
+        W_B += alpha * np.dot(np.reshape(O2, newshape=(3, 1)), np.reshape(delta, newshape=(1, 8)))
     figure_2.plot(W_plot)
     print('network input: \n', X)
     print('desired output: \n', Y)

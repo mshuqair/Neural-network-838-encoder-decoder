@@ -1,13 +1,15 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import seaborn as sns
 from keras.layers import Dense
-from keras.optimizer_v2.adam import Adam
+from keras.optimizers import Adam
 from keras.models import Sequential
 
 
 def plot_curve(accuracy_train, loss_train):
+    sns.set_theme(style='darkgrid')
     epochs = np.arange(loss_train.shape[0])
-    plt.figure(figsize=[9, 5])
+    plt.figure(figsize=(9, 5))
     plt.subplot(1, 2, 1)
     plt.plot(epochs, accuracy_train)
     plt.xlabel('Epoch#')
@@ -22,8 +24,9 @@ def plot_curve(accuracy_train, loss_train):
     plt.show()
 
 
+# Main Code
 alpha = 0.1  # learning rate
-N = 5000  # number of epochs
+N = 1000  # number of epochs
 X = np.identity(8)  # all input
 y = X  # all output
 
