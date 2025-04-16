@@ -3,79 +3,82 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 
-def sigma(x):
-    sig = 1 / (1 + np.exp(-x))
-    return sig
+def sigmoid(x):
+    """Sigmoid activation function."""
+    return 1 / (1 + np.exp(-x))
 
 
-alpha = 0.5  # learning rate
-N = 5000  # number of iterations
-X_all = np.identity(8)  # all input
-Y_all = X_all  # all output
-O = np.zeros(8)  # network output vector
-SSE = np.zeros((8, N))  # sum of squared errors
-W_plot = np.zeros(N)
+# Parameters
+alpha = 0.5              # Learning rate
+N = 5000                 # Number of iterations
+X_all = np.identity(8)   # Input vectors
+Y_all = X_all            # Target output (identity mapping)
 
+O = np.zeros(8)          # Final output vector
+SSE = np.zeros((8, N))   # Sum of squared errors for each input over time
+W_plot = np.zeros(N)     # Tracking one weight for visualization
+
+# Plot setup
 sns.set_theme(style='darkgrid')
-figure_1 = plt.figure().add_subplot(111)
-figure_2 = plt.figure().add_subplot(111)
+figure_sse = plt.figure().add_subplot(111)
+figure_weights = plt.figure().add_subplot(111)
 
-# inputs
-for i in range(8):
-    print('input number: ' + str(i))
-    X = X_all[i, :]
-    Y = Y_all[i, :]
+# Loop through each input vector
+for sample_idx in range(8):
+    print(f'Input number: {sample_idx}')
+    
+    X = X_all[sample_idx, :]
+    Y = Y_all[sample_idx, :]
 
-    # initialize parameters
-    O1 = np.zeros(8)  # output of input layer
-    O2 = np.zeros(3)  # output of hidden layer
-    O3 = np.zeros(8)  # output of last layer
-    W_A = np.random.randn(8, 3)  # weights between input and hidden layer
-    W_B = np.random.randn(3, 8)  # weights between hidden layer and last layer
+    # Initialize outputs
+    O1 = np.zeros(8)      # Input layer
+    O2 = np.zeros(3)      # Hidden layer
+    O3 = np.zeros(8)      # Output layer
 
-    # the network
+    # Initialize weights
+    W_A = np.random.randn(8, 3)  # Input to hidden
+    W_B = np.random.randn(3, 8)  # Hidden to output
+
+    # Training loop
     for n in range(N):
+        W_plot[n] = W_A[sample_idx, 0]
 
-        W_plot[n] = W_A[i, 0]
-
-        # the first layer
+        # Forward pass
         O1 = X
+        for j in range(3):
+            O2[j] = sigmoid(np.dot(W_A[:, j], O1))
+        for k in range(8):
+            O3[k] = sigmoid(np.dot(W_B[:, k], O2))
 
-        # the hidden layer
-        for i in range(3):
-            O2[i] = sigma(np.dot(W_A[:, i], O1))
-
-        # the output layer
-        for i in range(8):
-            O3[i] = sigma(np.dot(W_B[:, i], O2))
-
-        # network output
         O = O3
 
-        # calculate sse for network
-        SSE[i, n] = 0.5 * sum(pow((Y - O), 2))
+        # Error calculation
+        SSE[sample_idx, n] = 0.5 * np.sum((Y - O) ** 2)
 
-        # calculating delta and delta_h
+        # Backpropagation
         delta = O * (1 - O) * (Y - O)
         delta_h = O2 * (1 - O2) * np.dot(W_B, delta)
 
-        # updating the weights
-        W_A += alpha * np.dot(np.reshape(X, newshape=(8, 1)), np.reshape(delta_h, newshape=(1, 3)))
-        W_B += alpha * np.dot(np.reshape(O2, newshape=(3, 1)), np.reshape(delta, newshape=(1, 8)))
-    figure_2.plot(W_plot)
-    print('network input: \n', X)
-    print('desired output: \n', Y)
-    print('network output: \n', O)
-    print('hidden values: \n', O2, '\n')
-    figure_1.plot(SSE[i, :])
+        # Weight updates
+        W_A += alpha * np.outer(X, delta_h)
+        W_B += alpha * np.outer(O2, delta)
 
-figure_1.title.set_text('sum of squared error of the network for the 8 inputs')
-figure_1.set_xlabel('number of iterations')
-figure_1.set_ylabel('SSE')
+    # Plotting and output
+    figure_weights.plot(W_plot)
+    print('Network input:\n', X)
+    print('Desired output:\n', Y)
+    print('Network output:\n', O)
+    print('Hidden layer values:\n', O2, '\n')
 
-figure_2.title.set_text('weights from inputs to one hidden neuron')
-figure_2.set_xlabel('number of iterations')
-figure_2.set_ylabel('weights value')
+    figure_sse.plot(SSE[sample_idx, :])
+
+# Final plots
+figure_sse.set_title('Sum of Squared Error of the Network for the 8 Inputs')
+figure_sse.set_xlabel('Number of Iterations')
+figure_sse.set_ylabel('SSE')
+
+figure_weights.set_title('Weights from Inputs to One Hidden Neuron')
+figure_weights.set_xlabel('Number of Iterations')
+figure_weights.set_ylabel('Weight Value')
 
 plt.show()
-
